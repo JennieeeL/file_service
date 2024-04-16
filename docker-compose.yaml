@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  file_service:
+    container_name: file_service
+    restart: unless-stopped
+    image: cise/file_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ROOT_PWD: ${ROOT_PWD}
+    ports:
+      - "80:80"
+      - "8080:80"
+      - "2222:22"
+    volumes:
+      - .:/app
+    privileged: true
+    environment:
+      FACELESS_USR: ${FACELESS_USR}
+      FACELESS_PWD: ${FACELESS_PWD}
+      MOUNT_BIOS: ${MOUNT_BIOS}
+      MOUNT_OTHERS: ${MOUNT_OTHERS}
+      MOUNT_DIST_FOLDER: ${MOUNT_DIST_FOLDER}
+      BIOS_DRIVE_PATH: ${BIOS_DRIVE_PATH}
+      PNG_DRIVE_PATH: ${PNG_DRIVE_PATH}
+      SERVICE: ${SERVICE}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+      
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 192.168.100.0/24
+        gateway: 192.168.100.254
